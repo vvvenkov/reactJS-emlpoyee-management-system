@@ -59,7 +59,7 @@ export default function UserList() {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* <UserItem /> */}
+                    <UserItem />
                 </tbody>
             </table>
 

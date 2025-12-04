@@ -3,13 +3,13 @@ export default function UserItem() {
     return (
         <tr>
             <td>
-                <img src={imageUrl} alt={`${firstName}'s profile`} className="image" />
+                {/* <img src={imageUrl} alt={`${firstName}'s profile`} className="image" /> */}
             </td>
-            <td>{firstName}</td>
-            <td>{lastName}</td>
-            <td>{email}</td>
-            <td>{phoneNumber}</td>
-            <td>{fromIsoDate(createdAt)}</td>
+            <td>Peter</td>
+            <td>Johnson</td>
+            <td>peter@abv.bg</td>
+            <td>123412341234</td>
+            <td>June 28, 2022</td>
 
             <td className="actions">
                 <button className="btn edit-btn" title="Edit" onClick={() => onEditClick(_id)}>
