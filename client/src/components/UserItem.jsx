@@ -1,15 +1,24 @@
+import { fromIsoDate } from "../utils/datetimeUtils";
 
-export default function UserItem() {
+export default function UserItem({
+    _id,
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    createdAt,
+    imageUrl,
+}) {
     return (
         <tr>
             <td>
-                {/* <img src={imageUrl} alt={`${firstName}'s profile`} className="image" /> */}
+                <img src={imageUrl} alt={`${firstName}'s profile`} className="image" />
             </td>
-            <td>Peter</td>
-            <td>Johnson</td>
-            <td>peter@abv.bg</td>
-            <td>123412341234</td>
-            <td>June 28, 2022</td>
+            <td>{firstName}</td>
+            <td>{lastName}</td>
+            <td>{email}</td>
+            <td>{phoneNumber}</td>
+            <td>{fromIsoDate(createdAt)}</td>
 
             <td className="actions">
                 <button className="btn edit-btn" title="Edit" onClick={() => onEditClick(_id)}>
