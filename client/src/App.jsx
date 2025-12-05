@@ -9,6 +9,7 @@ import CreateUserModal from "./components/CreateUserModal.jsx"
 function App() {
 	const [users, setUsers] = useState([]);
 	const [showCreateUser, setShowCreateUser] = useState(false);
+	const [forceRefresh, setForceRefresh] = useState(true);
 
 
 	useEffect(() => {
@@ -18,7 +19,7 @@ function App() {
 				setUsers(Object.values(result))
 			})
 			.catch((err) => alert(err.message));
-	}, []);
+	}, [forceRefresh]);
 
 
 	const addUserClickHandler = () => {
@@ -56,10 +57,8 @@ function App() {
 			},
 			body: JSON.stringify(userData)
 		})
-			.then(respone => respone.json)
-			.then(result => {
-
-			})
+			.then(() => setForceRefresh(state => !state))
+			.catch(err => alert(err.message))
 	}
 
 	return (
@@ -70,7 +69,7 @@ function App() {
 				<section className="card users-container">
 					<Search />
 
-					<UserList users={users}/>
+					<UserList users={users} />
 
 					<button className="btn-add btn" onClick={addUserClickHandler}>Add new user</button>
 
