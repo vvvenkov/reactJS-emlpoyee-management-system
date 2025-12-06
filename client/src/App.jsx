@@ -1,99 +1,104 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Footer from "./components/Footer.jsx"
 import Header from "./components/Header.jsx"
 import Pagination from "./components/Pagination.jsx"
 import Search from "./components/Search.jsx"
 import UserList from "./components/UserList.jsx"
-import CreateUserModal from "./components/CreateUserModal.jsx"
+import UserSaveModal from "./components/UserSaveModal.jsx"
+import { useEffect } from "react"
 
 function App() {
-	const [users, setUsers] = useState([]);
-	const [showCreateUser, setShowCreateUser] = useState(false);
-	const [refresh, setRefresh] = useState(true);
+    const [users, setUsers] = useState([]);
+    const [showCreateUser, setShowCreateUser] = useState(false);
+    const [refresh, setRefresh] = useState(true);
 
-	const
+    useEffect(() => {
+        fetch('http://localhost:3030/jsonstore/users')
+            .then(response => response.json())
+            .then(result => {
+                setUsers(Object.values(result));
+            })
+            .catch((err) => alert(err.message));
+    }, [refresh]);
 
-		useEffect(() => {
-			fetch('http://localhost:3030/jsonstore/users')
-				.then(response => response.json())
-				.then(result => {
-					setUsers(Object.values(result))
-				})
-				.catch((err) => alert(err.message));
-		}, [refresh]);
+    const forceUserRefersh = () => {
+        setRefresh(state => !state);
+    };
 
-	const forceRefresh = () => {
-		setRefresh(state => !state)
-	}
+    const addUserClickHandler = () => {
+        setShowCreateUser(true);
+    };
 
-	const addUserClickHandler = () => {
-		setShowCreateUser(true);
-	};
+    const closeUserModalHandler = () => {
+        setShowCreateUser(false);
+    };
 
-	const closeUserModalHandler = () => {
-		setShowCreateUser(false);
-	};
+    const sortUsersHandler = () => {
+        console.log('sort users')
 
-	const addUserSubmitHandler = (event) => {
-		//Stop page refresh
-		event.preventDefault();
+        setUsers(state => [...state].sort((userA, userB) => new Date(userB.createdAt) - new Date(userA.createdAt)))
+    }
 
-		//get form data
-		const formData = new FormData(event.target);
+    const addUserSubmitHandler = (event) => {
+        // Stop page refresh
+        event.preventDefault();
 
-		//transform form data to user data
-		const { country, city, street, streeNumber, ...userData } = Object.fromEntries(formData)
-		userData.address = {
-			country,
-			city,
-			street,
-			streeNumber
-		};
+        // Get form data
+        const formData = new FormData(event.target);
 
-		userData.createdAt = new Date().toISOString;
-		userData.updatedAt = new Date().toISOString;
+        // Transform formdata to userData
+        const { country, city, street, streetNumber, ...userData } = Object.fromEntries(formData);
+        userData.address = {
+            country,
+            city,
+            street,
+            streetNumber,
+        };
 
-		// create new user request
-		fetch('http://localhost:3030/jsonstore/users', {
-			method: 'POST',
-			headers: {
-				'content-type': 'application/json'
-			},
-			body: JSON.stringify(userData)
-		})
-			.then(() => {
-				closeUserModalHandler();
-				forceRefresh();
-			})
-			.catch(err => alert(err.message))
-	}
+        userData.createdAt = new Date().toISOString();
+        userData.updatedAt = new Date().toISOString();
 
-	return (
-		<div>
-			<Header />
+        // Create new user request
+        fetch('http://localhost:3030/jsonstore/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(() => {
+                closeUserModalHandler();
+                forceUserRefersh();
+            })
+            .catch(err => alert(err.message))
+    }
 
-			<main className="main">
-				<section className="card users-container">
-					<Search />
+    return (
+        <div>
+            <Header />
 
-					<UserList users={users} />
+            <main className="main">
+                <section className="card users-container">
+                    <Search />
 
-					<button className="btn-add btn" onClick={addUserClickHandler}>Add new user</button>
+                    <UserList users={users} forceUserRefersh={forceUserRefersh} onSort={sortUsersHandler} />
 
-					<Pagination />
-				</section>
+                    <button className="btn-add btn" onClick={addUserClickHandler}>Add new user</button>
 
-				{showCreateUser &&
-					<CreateUserModal
-						onClose={closeUserModalHandler}
-						onSubmit={addUserSubmitHandler}
-					/>
-				}
-			</main>
+                    <Pagination />
+                </section>
 
-			<Footer />
-		</div >
-	)
+                {showCreateUser &&
+                    <UserSaveModal
+                        onClose={closeUserModalHandler}
+                        onSubmit={addUserSubmitHandler}
+                    />
+                }
+            </main>
+
+            <Footer />
+        </div>
+    )
 }
 
 export default App

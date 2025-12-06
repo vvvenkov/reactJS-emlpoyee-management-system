@@ -12,5 +12,5 @@ export default function Search() {
                 <span>Users</span>
             </h2>
         </div>
-    )
+    );
 }

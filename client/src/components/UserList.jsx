@@ -1,30 +1,72 @@
-import UserDeleteModal from "./UserDeleteModal.jsx";
-import UserDetails from "./userDetails.jsx";
-import UserItem from "./UserItem.jsx";
 import { useState } from "react";
+import UserDetails from "./UserDetails.jsx";
+import UserItem from "./UserItem.jsx";
+import UserDeleteModal from "./UserDeleteModal.jsx";
+import UserSaveModal from "./UserSaveModal.jsx";
 
 export default function UserList({
     users,
+    forceUserRefersh,
+    onSort,
 }) {
-
     const [showUserDetails, setShowUserDetails] = useState(false);
     const [showUserDelete, setShowUserDelete] = useState(false);
+    const [showUserEdit, setShowUserEdit] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
 
     const detailsActionClickHandler = (userId) => {
         setShowUserDetails(true);
         setSelectedUserId(userId);
-    }
+    };
 
     const deleteActionClickHandler = (userId) => {
         setSelectedUserId(userId);
         setShowUserDelete(true);
-    }
+    };
+
+    const editActionClickHandler = (userId) => {
+        setSelectedUserId(userId);
+        setShowUserEdit(true);
+    };
 
     const closeModalHandler = () => {
         setShowUserDetails(false);
         setShowUserDelete(false);
-    }
+        setShowUserEdit(false);
+        setSelectedUserId(null);
+        forceUserRefersh();
+    };
+
+    const editUserHandler = async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        const { country, city, street, streetNumber, ...userData } = Object.fromEntries(formData);
+
+        userData.address = {
+            country,
+            city,
+            street,
+            streetNumber,
+        };
+
+        userData.updatedAt = new Date().toISOString();
+
+        try {
+            await fetch(`http://localhost:3030/jsonstore/users/${selectedUserId}`, {
+                method: 'PATCH',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+            closeModalHandler();
+        } catch (error) {
+            alert(error.message);
+        }
+    };
 
     return (
         <div className="table-wrapper">
@@ -70,7 +112,7 @@ export default function UserList({
                                 </path>
                             </svg>
                         </th>
-                        <th>
+                        <th onClick={onSort}>
                             Created
                             <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
                                 className="icon active-icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
@@ -84,13 +126,14 @@ export default function UserList({
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(user =>
-                    (<UserItem
-                        {...user}
-                        key={user.id}
-                        onDetailsClick={detailsActionClickHandler}
-                        onDeleteClick={deleteActionClickHandler}
-                    />
+                    {users.map(user => (
+                        <UserItem
+                            {...user}
+                            key={user._id}
+                            onDetailsClick={detailsActionClickHandler}
+                            onDeleteClick={deleteActionClickHandler}
+                            onEditClick={editActionClickHandler}
+                        />
                     ))}
                 </tbody>
             </table>
@@ -106,7 +149,15 @@ export default function UserList({
                 <UserDeleteModal
                     userId={selectedUserId}
                     onClose={closeModalHandler}
+                />
+            )}
 
+            {showUserEdit && (
+                <UserSaveModal
+                    userId={selectedUserId}
+                    onClose={closeModalHandler}
+                    onSubmit={editUserHandler}
+                    editMode
                 />
             )}
         </div>

@@ -1,4 +1,4 @@
-import { fromIsoDate } from "../utils/datetimeUtils";
+import { fromIsoDate } from "../utils/datetimeUtils.js";
 
 export default function UserItem({
     _id,
@@ -10,6 +10,7 @@ export default function UserItem({
     imageUrl,
     onDetailsClick,
     onDeleteClick,
+    onEditClick,
 }) {
     return (
         <tr>
@@ -51,5 +52,4 @@ export default function UserItem({
             </td>
         </tr>
     );
-
 }
