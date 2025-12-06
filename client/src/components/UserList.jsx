@@ -1,9 +1,8 @@
 import UserItem from "./UserItem.jsx";
 
 export default function UserList(
-    users,
+    {users},
 ) {
-   
     return (
         <div className="table-wrapper">
             <table className="table">
