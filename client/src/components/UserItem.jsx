@@ -9,6 +9,7 @@ export default function UserItem({
     createdAt,
     imageUrl,
     onDetailsClick,
+    onDeleteClick,
 }) {
     return (
         <tr>
