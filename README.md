@@ -7,4 +7,4 @@ Hot to run:
 1. clone the repo
 2. Install dependencies - mpn install
 3. npm start
-4. server will run on port 3030
+4. FrontEnd will run on port 3030
